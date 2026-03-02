@@ -1,4 +1,4 @@
-package com.kolisnichenko2828.itemtracker.theme
+package com.kolisnichenko2828.itemtracker.presentation.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

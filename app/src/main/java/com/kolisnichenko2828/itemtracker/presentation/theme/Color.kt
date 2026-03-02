@@ -1,4 +1,4 @@
-package com.kolisnichenko2828.itemtracker.theme
+package com.kolisnichenko2828.itemtracker.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
