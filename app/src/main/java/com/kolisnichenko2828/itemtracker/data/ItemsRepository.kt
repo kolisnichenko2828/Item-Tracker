@@ -15,7 +15,7 @@ import javax.inject.Inject
 class ItemsRepository @Inject constructor (
     private val dataStore: DataStore<Preferences>
 ) {
-    val LAST_ID_KEY = intPreferencesKey("last_viewed_id")
+    private val LAST_ID_KEY = intPreferencesKey("last_viewed_id")
 
     fun getItems(): List<Item> {
         val items =  (0..19).map { id ->

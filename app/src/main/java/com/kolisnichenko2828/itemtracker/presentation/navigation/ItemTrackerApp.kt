@@ -5,7 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.navigation3.runtime.NavEntry
+import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.kolisnichenko2828.itemtracker.MainViewModel
 import com.kolisnichenko2828.itemtracker.presentation.item.ItemScreen
@@ -21,7 +22,8 @@ sealed interface Screen : Parcelable {
 
 @Composable
 fun ItemTrackerApp(
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    modifier: Modifier = Modifier
 ) {
     val backStack = rememberSaveable { mutableStateListOf<Screen>(Screen.List) }
 
@@ -34,22 +36,21 @@ fun ItemTrackerApp(
     }
 
     NavDisplay(
+        modifier = modifier,
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
-        entryProvider = { screen ->
-            when (screen) {
-                is Screen.List -> NavEntry(screen) {
-                    ListScreen(
-                        onItemClick = { id ->
-                            backStack.add(Screen.Item(id))
-                        }
-                    )
-                }
-                is Screen.Item -> NavEntry(screen) {
-                    ItemScreen(
-                        itemId = screen.itemId
-                    )
-                }
+        entryProvider = entryProvider {
+            entry<Screen.List> {
+                ListScreen(
+                    onItemClick = { id ->
+                        backStack.add(Screen.Item(id))
+                    }
+                )
+            }
+            entry<Screen.Item> {
+                ItemScreen(
+                    itemId = it.itemId
+                )
             }
         }
     )
