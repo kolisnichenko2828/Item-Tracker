@@ -21,7 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,8 +64,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        if (intent?.action == "ACTION_OPEN_LAST_VIEWED") {
-            mainViewModel.loadLastViewedItem()
+        if (intent?.action == Intent.ACTION_VIEW) {
+            val data = intent.data
+            val scheme = "app"
+            val host = "task.one"
+            if (data != null && data.host == host && data.scheme == scheme) {
+                mainViewModel.loadLastViewedItem()
+            }
         }
     }
 

@@ -7,7 +7,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.kolisnichenko2828.itemtracker.MainActivity
+import androidx.core.net.toUri
 import com.kolisnichenko2828.itemtracker.R
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,23 +18,34 @@ class ForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
 
-        val context = this
         val requestCode = 0
-        val activityFlags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pendingFlags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        val pendingAction = "ACTION_OPEN_LAST_VIEWED"
+        val actionUri = "app://task.one".toUri()
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Для Android 12 и выше прямой запуск MainActivity
-            val activityIntent = Intent(this, MainActivity::class.java)
+            // android 12+
+            val activityIntent = Intent(Intent.ACTION_VIEW, actionUri)
+            val activityFlags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
             activityIntent.addFlags(activityFlags)
-            activityIntent.action = pendingAction
-            PendingIntent.getActivity(context, requestCode, activityIntent, pendingFlags)
+
+            PendingIntent.getActivity(
+                this,
+                requestCode,
+                activityIntent,
+                pendingFlags
+            )
         } else {
-            // Для Android 11 и ниже оставляем BroadcastReceiver
-            val broadcastIntent = Intent(this, BroadcastReceiver::class.java)
-            broadcastIntent.action = pendingAction
-            PendingIntent.getBroadcast(context, requestCode, broadcastIntent, pendingFlags)
+            // android <= 11
+            val broadcastAction = "com.kolisnichenko2828.itemtracker.ACTION_OPENLASTVIEWEDITEM"
+            val broadcastIntent = Intent(broadcastAction)
+            broadcastIntent.setPackage(this.packageName)
+
+            PendingIntent.getBroadcast(
+                this,
+                requestCode,
+                broadcastIntent,
+                pendingFlags
+            )
         }
 
         val notification = NotificationCompat.Builder(this, channelId)

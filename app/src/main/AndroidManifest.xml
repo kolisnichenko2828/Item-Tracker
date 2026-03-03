@@ -25,6 +25,12 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="app" android:host="task.one" />
+            </intent-filter>
         </activity>
 
         <service
@@ -34,7 +40,11 @@
 
         <receiver
             android:name=".presentation.service.BroadcastReceiver"
-            android:exported="false" />
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.kolisnichenko2828.itemtracker.ACTION_OPENLASTVIEWEDITEM" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
