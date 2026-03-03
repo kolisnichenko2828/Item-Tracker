@@ -33,6 +33,7 @@ class ForegroundService : Service() {
         } else {
             // Для Android 11 и ниже оставляем BroadcastReceiver
             val broadcastIntent = Intent(this, BroadcastReceiver::class.java)
+            broadcastIntent.action = pendingAction
             PendingIntent.getBroadcast(context, requestCode, broadcastIntent, pendingFlags)
         }
 

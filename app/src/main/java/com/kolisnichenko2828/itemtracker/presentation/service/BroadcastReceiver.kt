@@ -10,12 +10,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class BroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
-        val activityFlags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val activityAction = "ACTION_OPEN_LAST_VIEWED"
-        val activityIntent = Intent(context, MainActivity::class.java)
-        activityIntent.addFlags(activityFlags)
-        activityIntent.action = activityAction
-        context.startActivity(activityIntent)
+        if (intent?.action == "ACTION_OPEN_LAST_VIEWED") {
+            val activityFlags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            val activityAction = "ACTION_OPEN_LAST_VIEWED"
+            val activityIntent = Intent(context, MainActivity::class.java)
+            activityIntent.addFlags(activityFlags)
+            activityIntent.action = activityAction
+            context.startActivity(activityIntent)
+        }
     }
 
 }
