@@ -38,7 +38,6 @@ fun ItemTrackerApp(
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Screen.List> {
                 ListScreen(
@@ -49,7 +48,8 @@ fun ItemTrackerApp(
             }
             entry<Screen.Item> {
                 ItemScreen(
-                    itemId = it.itemId
+                    itemId = it.itemId,
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
         }
