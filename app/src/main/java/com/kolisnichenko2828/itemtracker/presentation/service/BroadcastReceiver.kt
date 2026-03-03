@@ -5,28 +5,17 @@ import android.content.Context
 import android.content.Intent
 import com.kolisnichenko2828.itemtracker.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class BroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
-        val pendingResult = goAsync()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val activityFlags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                val activityAction = "ACTION_OPEN_LAST_VIEWED"
-                val activityIntent = Intent(context, MainActivity::class.java)
-                activityIntent.addFlags(activityFlags)
-                activityIntent.action = activityAction
-                context.startActivity(activityIntent)
-            } finally {
-                pendingResult.finish()
-            }
-        }
+        val activityFlags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val activityAction = "ACTION_OPEN_LAST_VIEWED"
+        val activityIntent = Intent(context, MainActivity::class.java)
+        activityIntent.addFlags(activityFlags)
+        activityIntent.action = activityAction
+        context.startActivity(activityIntent)
     }
 
 }
