@@ -22,10 +22,9 @@ class AppForegroundService : Service() {
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Для Android 12 и выше прямой запуск MainActivity
-            val targetIntent = Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                action = "ACTION_OPEN_FROM_NOTIFICATION"
-            }
+            val targetIntent = Intent(this, MainActivity::class.java)
+            targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            targetIntent.action = "ACTION_OPEN_FROM_NOTIFICATION"
             PendingIntent.getActivity(
                 this,
                 0,

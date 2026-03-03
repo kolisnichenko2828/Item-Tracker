@@ -1,12 +1,15 @@
 package com.kolisnichenko2828.itemtracker.presentation.navigation
 
-import android.content.Intent
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import com.kolisnichenko2828.itemtracker.MainViewModel
 import com.kolisnichenko2828.itemtracker.presentation.item.ItemScreen
 import com.kolisnichenko2828.itemtracker.presentation.list.ListScreen
 import kotlinx.parcelize.Parcelize
@@ -20,15 +23,16 @@ sealed interface Screen : Parcelable {
 
 @Composable
 fun ItemTrackerApp(
-    initialIntent: Intent? = null
+    mainViewModel: MainViewModel
 ) {
-    val startId = initialIntent?.getIntExtra("last_viewed_id", -1) ?: -1
-    val backStack = rememberSaveable {
-        val stack = mutableStateListOf<Screen>(Screen.List)
-        if (startId != -1) {
-            stack.add(Screen.Item(startId))
+    val backStack = rememberSaveable { mutableStateListOf<Screen>(Screen.List) }
+    val itemId by mainViewModel.itemId.collectAsStateWithLifecycle()
+
+    LaunchedEffect(itemId) {
+        itemId?.let { id ->
+            backStack.add(Screen.Item(id))
+            mainViewModel.onNavigationConsumed()
         }
-        stack
     }
 
     NavDisplay(

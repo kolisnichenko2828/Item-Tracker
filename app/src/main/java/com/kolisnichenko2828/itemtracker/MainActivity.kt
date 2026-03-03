@@ -14,66 +14,69 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.lifecycleScope
 import com.kolisnichenko2828.itemtracker.presentation.navigation.ItemTrackerApp
 import com.kolisnichenko2828.itemtracker.presentation.service.AppForegroundService
 import com.kolisnichenko2828.itemtracker.presentation.theme.ItemTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-        startAppService()
-    }
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            startAppService()
-        }
+        requestPermissionsAndStartService()
+        handleIntent(intent)
 
-        Intent(this, AppForegroundService::class.java).also { serviceIntent ->
-            startForegroundService(serviceIntent)
-        }
-
-        if (intent?.action == "ACTION_OPEN_FROM_NOTIFICATION") {
-            lifecycleScope.launch {
-                val lastId = viewModel.getLastViewedId()
-                if (lastId != null) {
-                    intent.putExtra("last_viewed_id", lastId)
-                }
-                setupCompose()
-            }
-        } else {
-            setupCompose()
-        }
-    }
-
-    private fun setupCompose() {
         setContent {
             ItemTrackerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        ItemTrackerApp(initialIntent = intent)
+                        ItemTrackerApp(
+                            mainViewModel = mainViewModel
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun startAppService() {
-        Intent(this, AppForegroundService::class.java).also { serviceIntent ->
-            startService(serviceIntent)
+    private fun requestPermissionsAndStartService() {
+        val requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) {
+            startAppService()
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            startAppService()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        // androd 12+
+        if (intent?.action == "ACTION_OPEN_FROM_NOTIFICATION") {
+            mainViewModel.loadLastViewedItem()
+        } else {
+            // android <= 11
+            val itemId = intent?.getIntExtra("last_viewed_id", -1) ?: -1
+            if (itemId != -1) mainViewModel.requestNavigation(itemId)
+        }
+    }
+
+    private fun startAppService() {
+        val serviceIntent = Intent(this, AppForegroundService::class.java)
+        startForegroundService(serviceIntent)
     }
 }

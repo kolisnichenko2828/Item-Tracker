@@ -21,17 +21,10 @@ class NotificationReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val lastId = itemsRepository.getLastViewedId().firstOrNull()
-
-                val targetIntent = Intent(
-                    context,
-                    MainActivity::class.java
-                ).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    if (lastId != null) {
-                        putExtra("last_viewed_id", lastId)
-                    }
-                }
+                val lastId = itemsRepository.getLastViewedId().firstOrNull() ?: -1
+                val targetIntent = Intent(context, MainActivity::class.java)
+                targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                targetIntent.putExtra("last_viewed_id", lastId)
                 context.startActivity(targetIntent)
             } finally {
                 pendingResult.finish()
