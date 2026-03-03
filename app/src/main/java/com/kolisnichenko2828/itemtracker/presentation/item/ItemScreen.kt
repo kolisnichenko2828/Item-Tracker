@@ -36,17 +36,17 @@ fun ItemScreen(
         when (val currentItem = item) {
             is Item -> {
                 Text(
-                    text = "${stringResource(R.string.item_id)}: ${currentItem.id}",
+                    text = stringResource(R.string.item_id, currentItem.id),
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "${stringResource(R.string.item_name)}: ${currentItem.name}",
+                    text = stringResource(R.string.item_name, currentItem.name),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "${stringResource(R.string.item_description)}: ${currentItem.description}",
+                    text = stringResource(R.string.item_description, currentItem.description),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
