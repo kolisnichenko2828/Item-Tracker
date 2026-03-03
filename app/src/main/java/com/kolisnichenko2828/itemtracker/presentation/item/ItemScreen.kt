@@ -11,9 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kolisnichenko2828.itemtracker.R
 import com.kolisnichenko2828.itemtracker.domain.Item
 
 @Composable
@@ -34,22 +36,22 @@ fun ItemScreen(
         when (val currentItem = item) {
             is Item -> {
                 Text(
-                    text = "ID: ${currentItem.id}",
+                    text = "${stringResource(R.string.item_id)}: ${currentItem.id}",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Name: ${currentItem.name}",
+                    text = "${stringResource(R.string.item_name)}: ${currentItem.name}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Description: ${currentItem.description}",
+                    text = "${stringResource(R.string.item_description)}: ${currentItem.description}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
             else -> {
-                Text(text = "Item not found")
+                Text(text = stringResource(R.string.item_not_found))
             }
         }
     }
