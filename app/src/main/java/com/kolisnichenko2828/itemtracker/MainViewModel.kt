@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kolisnichenko2828.itemtracker.data.ItemsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,23 +15,13 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val itemsRepository: ItemsRepository
 ) : ViewModel() {
-    private val _itemId = MutableStateFlow<Int?>(null)
-    val itemId: StateFlow<Int?> = _itemId.asStateFlow()
+    private val _itemId = Channel<Int>()
+    val itemId: Flow<Int> = _itemId.receiveAsFlow()
 
-    // android 12+
     fun loadLastViewedItem() {
         viewModelScope.launch {
             val lastId = itemsRepository.getLastViewedId().firstOrNull() ?: -1
-            _itemId.value = lastId
+            _itemId.send(lastId)
         }
-    }
-
-    // android <= 11
-    fun requestNavigation(itemId: Int) {
-        _itemId.value = itemId
-    }
-
-    fun onNavigationConsumed() {
-        _itemId.value = null
     }
 }

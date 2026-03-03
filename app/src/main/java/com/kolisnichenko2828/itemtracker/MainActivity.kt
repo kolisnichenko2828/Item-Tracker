@@ -14,8 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.kolisnichenko2828.itemtracker.presentation.navigation.ItemTrackerApp
-import com.kolisnichenko2828.itemtracker.presentation.service.AppForegroundService
+import com.kolisnichenko2828.itemtracker.presentation.service.ForegroundService
 import com.kolisnichenko2828.itemtracker.presentation.theme.ItemTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -65,18 +67,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        // androd 12+
-        if (intent?.action == "ACTION_OPEN_FROM_NOTIFICATION") {
+        if (intent?.action == "ACTION_OPEN_LAST_VIEWED") {
             mainViewModel.loadLastViewedItem()
-        } else {
-            // android <= 11
-            val itemId = intent?.getIntExtra("last_viewed_id", -1) ?: -1
-            if (itemId != -1) mainViewModel.requestNavigation(itemId)
         }
     }
 
     private fun startAppService() {
-        val serviceIntent = Intent(this, AppForegroundService::class.java)
+        val serviceIntent = Intent(this, ForegroundService::class.java)
         startForegroundService(serviceIntent)
     }
 }

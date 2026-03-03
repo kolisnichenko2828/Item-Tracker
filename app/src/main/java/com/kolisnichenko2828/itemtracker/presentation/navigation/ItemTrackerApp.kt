@@ -3,10 +3,8 @@ package com.kolisnichenko2828.itemtracker.presentation.navigation
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.kolisnichenko2828.itemtracker.MainViewModel
@@ -26,12 +24,12 @@ fun ItemTrackerApp(
     mainViewModel: MainViewModel
 ) {
     val backStack = rememberSaveable { mutableStateListOf<Screen>(Screen.List) }
-    val itemId by mainViewModel.itemId.collectAsStateWithLifecycle()
 
-    LaunchedEffect(itemId) {
-        itemId?.let { id ->
-            backStack.add(Screen.Item(id))
-            mainViewModel.onNavigationConsumed()
+    LaunchedEffect(Unit) {
+        mainViewModel.itemId.collect { id ->
+            if (backStack.lastOrNull() != Screen.Item(id)) {
+                backStack.add(Screen.Item(id))
+            }
         }
     }
 
