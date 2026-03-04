@@ -13,13 +13,6 @@ import com.kolisnichenko2828.itemtracker.presentation.item.ItemScreen
 import com.kolisnichenko2828.itemtracker.presentation.list.ListScreen
 import kotlinx.parcelize.Parcelize
 
-sealed interface Screen : Parcelable {
-    @Parcelize
-    object List : Screen
-    @Parcelize
-    data class Item(val itemId: Int) : Screen
-}
-
 @Composable
 fun ItemTrackerApp(
     mainViewModel: MainViewModel,
@@ -49,9 +42,16 @@ fun ItemTrackerApp(
             }
             entry<Screen.Item> {
                 ItemScreen(
-                    itemId = it.itemId
+                    itemId = it.itemId,
                 )
             }
         }
     )
+}
+
+sealed interface Screen : Parcelable {
+    @Parcelize
+    object List : Screen
+    @Parcelize
+    data class Item(val itemId: Int) : Screen
 }

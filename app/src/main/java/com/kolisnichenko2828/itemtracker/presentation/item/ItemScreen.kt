@@ -23,17 +23,16 @@ fun ItemScreen(
     itemId: Int,
     itemViewModel: ItemViewModel = hiltViewModel()
 ) {
-    val item by itemViewModel.itemState.collectAsStateWithLifecycle()
+    val uiState by itemViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(itemId) {
-        itemViewModel.loadItem(itemId)
-        itemViewModel.saveLastViewedId(itemId)
+        itemViewModel.setEvent(ItemContract.Event.LoadItem(itemId))
     }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
-        when (val currentItem = item) {
+        when (val currentItem = uiState.item) {
             is Item -> {
                 Text(
                     text = stringResource(R.string.item_id, currentItem.id),

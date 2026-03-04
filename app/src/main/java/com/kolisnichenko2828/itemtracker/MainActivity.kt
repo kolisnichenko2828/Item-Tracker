@@ -66,10 +66,8 @@ class MainActivity : ComponentActivity() {
     private fun handleIntent(intent: Intent?) {
         if (intent?.action == Intent.ACTION_VIEW) {
             val data = intent.data
-            val scheme = "app"
-            val host = "task.one"
-            if (data != null && data.host == host && data.scheme == scheme) {
-                mainViewModel.loadLastViewedItem()
+            if (data != null && data.host == "task.one" && data.scheme == "app") {
+                mainViewModel.setEvent(MainContract.Event.LoadLastViewedItem)
             }
         }
     }
