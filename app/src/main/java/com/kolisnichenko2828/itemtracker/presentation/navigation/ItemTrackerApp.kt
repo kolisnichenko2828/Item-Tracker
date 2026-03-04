@@ -13,13 +13,6 @@ import com.kolisnichenko2828.itemtracker.presentation.item.ItemScreen
 import com.kolisnichenko2828.itemtracker.presentation.list.ListScreen
 import kotlinx.parcelize.Parcelize
 
-sealed interface Screen : Parcelable {
-    @Parcelize
-    object List : Screen
-    @Parcelize
-    data class Item(val itemId: Int) : Screen
-}
-
 @Composable
 fun ItemTrackerApp(
     mainViewModel: MainViewModel,
@@ -38,6 +31,7 @@ fun ItemTrackerApp(
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Screen.List> {
                 ListScreen(
@@ -49,9 +43,15 @@ fun ItemTrackerApp(
             entry<Screen.Item> {
                 ItemScreen(
                     itemId = it.itemId,
-                    onBack = { backStack.removeLastOrNull() }
                 )
             }
         }
     )
+}
+
+sealed interface Screen : Parcelable {
+    @Parcelize
+    object List : Screen
+    @Parcelize
+    data class Item(val itemId: Int) : Screen
 }

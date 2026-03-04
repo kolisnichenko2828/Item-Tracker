@@ -11,14 +11,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ListScreen(
@@ -26,14 +24,6 @@ fun ListScreen(
     viewModel: ListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.effect.collectLatest { effect ->
-            when (effect) {
-                is ListContract.Effect.NavigateToItem -> onItemClick(effect.itemId)
-            }
-        }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (uiState.isLoading) {
@@ -48,9 +38,7 @@ fun ListScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                viewModel.setEvent(ListContract.Event.OnItemClicked(item.id))
-                            }
+                            .clickable { onItemClick(item.id) }
                             .padding(16.dp)
                     )
                 }

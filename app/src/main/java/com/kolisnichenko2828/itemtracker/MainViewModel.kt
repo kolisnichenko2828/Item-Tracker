@@ -18,7 +18,15 @@ class MainViewModel @Inject constructor(
     private val _itemId = Channel<Int>()
     val itemId: Flow<Int> = _itemId.receiveAsFlow()
 
-    fun loadLastViewedItem() {
+    fun setEvent(event: MainContract.Event) {
+        when (event) {
+            is MainContract.Event.LoadLastViewedItem -> {
+                loadLastViewedItem()
+            }
+        }
+    }
+
+    private fun loadLastViewedItem() {
         viewModelScope.launch {
             val lastId = itemsRepository.getLastViewedId().firstOrNull() ?: -1
             _itemId.send(lastId)

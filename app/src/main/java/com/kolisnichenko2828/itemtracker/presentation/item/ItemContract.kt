@@ -9,10 +9,5 @@ class ItemContract {
 
     sealed interface Event {
         data class LoadItem(val itemId: Int) : Event
-        object BackClicked : Event
-    }
-
-    sealed interface Effect {
-        object NavigateBack : Effect
     }
 }
